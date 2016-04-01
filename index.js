@@ -48,7 +48,8 @@ var GoodTables = function(options, userEndpointURL) {
     method           : 'get',
     report_limit     : 1000,
     report_type      : 'basic',
-    row_limit        : 20000
+    row_limit        : 20000,
+    byte_limit       : 16*1024
   }, options);
 
   if(!_.contains(['get', 'post'], this.options.method))
@@ -68,6 +69,15 @@ GoodTables.prototype.run = function (data, schema, data_url) {
     if ( data ) {
       if ( data instanceof ArrayBuffer ) {
         var byteView = new Uint8Array(data);
+        if ( byteView.length > this.options.byte_limit ) {
+          var bl = this.options.byte_limit;
+          var cutoff = byteView.indexOf(10, bl - 1024);
+          if ( cutoff === -1 || cutoff > bl ) {
+            byteView = byteView.subarray(0,bl);
+          } else {
+            byteView = byteView.subarray(0,cutoff);
+          }
+        }
         params.data_base64 = base64.fromByteArray(byteView);
       } else {
         params.data = data;
