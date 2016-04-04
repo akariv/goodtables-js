@@ -10,6 +10,7 @@ function ValidationReport(report, options) {
   this.rawResults = report.results;
   this.headers = report.meta.headers;
   this.encoding = report.meta.encoding;
+  this.success = report.success;
 
   if(options.isGrouped)
     // Grouped report structure
@@ -30,7 +31,7 @@ ValidationReport.prototype.getHeaders = function() { return this.headers; }
 ValidationReport.prototype.getEncoding = function() { return this.encoding; }
 ValidationReport.prototype.getGroupedByRows = function() { return this.rawResults; }
 ValidationReport.prototype.getValidationErrors = function() { return this.errors; }
-ValidationReport.prototype.isValid = function() { return !Boolean(this.errors.length); }
+ValidationReport.prototype.isValid = function() { return this.success && !Boolean(this.errors.length); }
 
 function convertToGetParams(params) {
   return _.map(params, function(value, key){
