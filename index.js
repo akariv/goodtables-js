@@ -72,7 +72,16 @@ GoodTables.prototype.run = function (data, schema, data_url) {
         var byteView = new Uint8Array(data);
         if ( byteView.length > this.options.byte_limit ) {
           var bl = this.options.byte_limit;
-          var cutoff = byteView.indexOf(10, bl - 1024);
+          var cutoff = -1;
+          if (byteView.indexOf) {
+            cutoff = byteView.indexOf(10, bl - 1024);
+          } else {
+            for (var i = bl-1024; i < bl; i++) {
+              if (byteView[i] === 10) {
+                cutoff = i;
+              }
+            }
+          }
           if ( cutoff === -1 || cutoff > bl ) {
             byteView = byteView.subarray(0,bl);
           } else {
